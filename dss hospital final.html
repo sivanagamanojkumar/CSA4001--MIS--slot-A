@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management Decision Support System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .modal-backdrop {
+            background-color: #000000;
+            opacity: 0.5;
+        }
+        .modal-dialog {
+            margin-top: 10%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Hospital Management Decision Support System</h1>
+    </div>
+    <div class="main-content">
+        <!-- Login Page -->
+        <div id="login-page" style="display:block;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Login</h5>
+                    <form>
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" class="form-control" id="username" placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" class="form-control" id="password" placeholder="Enter password">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="login-btn">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" style="display:none;">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Patient Admissions</h5>
+                            <p class="card-text" id="admissions-count">0 patients admitted</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-admission-modal">Add Admission</button>
+                            <button type="button" class="btn btn-primary" id="view-patients-btn">View Patients</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Patient Discharges</h5>
+                            <p class="card-text" id="discharges-count">0 patients discharged</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-discharge-modal">Add Discharge</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Doctor Availability</h5>
+                            <p class="card-text" id="doctors-count">0 doctors available</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-doctor-modal">Add Doctor</button>
+                            <button type="button" class="btn btn-primary" id="view-doctors-btn">View Doctors</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Revenue</h5>
+                            <p class="card-text" id="revenue-count">$0 revenue</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-revenue-modal">Add Revenue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Bed Availability</h5>
+                            <p class="card-text" id="beds-count">0 beds available</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-bed-modal">Add Bed</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Patient Details</h2>
+                    <table id="patient-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Admission Date</th>
+                                <th>Discharge Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patient-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Doctor Details</h2>
+                    <table id="doctor-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Doctor Name</th>
+                                <th>Specialty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctor-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Admission Details</h2>
+                    <table id="admission-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Admission Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admission-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Discharge Details</h2>
+                    <table id="discharge-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Patient Name</th>
+                                <th>Discharge Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="discharge-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Bed Details</h2>
+                    <table id="bed-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Bed Number</th>
+                                <th>Bed Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bed-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Revenue Details</h2>
+                    <table id="revenue-table" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Revenue Amount</th>
+                                <th>Revenue Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenue-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="add-admission-modal" tabindex="-1" role="dialog" aria-labelledby="add-admission-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add-admission-modal-label">Add Admission</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="admission-patient-name">Patient Name:</label>
+                            <input type="text" class="form-control" id="admission-patient-name" placeholder="Enter patient name">
+                        </div>
+                        <div class="form-group">
+                            <label for="admission-date">Admission Date:</label>
+                            <input type="date" class="form-control" id="admission-date" placeholder="Enter admission date">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-admission-btn">Add Admission</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="add-discharge-modal" tabindex="-1" role="dialog" aria-labelledby="add-discharge-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add-discharge-modal-label">Add Discharge</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="discharge-patient-name">Patient Name:</label>
+                            <input type="text" class="form-control" id="discharge-patient-name" placeholder="Enter patient name">
+                        </div>
+                        <div class="form-group">
+                            <label for="discharge-date">Discharge Date:</label>
+                            <input type="date" class="form-control" id="discharge-date" placeholder="Enter discharge date">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-discharge-btn">Add Discharge</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="add-doctor-modal" tabindex="-1" role="dialog" aria-labelledby="add-doctor-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add-doctor-modal-label">Add Doctor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="doctor-name">Doctor Name:</label>
+                            <input type="text" class="form-control" id="doctor-name" placeholder="Enter doctor name">
+                        </div>
+                        <div class="form-group">
+                            <label for="doctor-specialty">Doctor Specialty:</label>
+                            <input type="text" class="form-control" id="doctor-specialty" placeholder="Enter doctor specialty">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-doctor-btn">Add Doctor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="add-revenue-modal" tabindex="-1" role="dialog" aria-labelledby="add-revenue-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add-revenue-modal-label">Add Revenue</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="revenue-amount">Revenue Amount:</label>
+                            <input type="number" class="form-control" id="revenue-amount" placeholder="Enter revenue amount">
+                        </div>
+                        <div class="form-group">
+                            <label for="revenue-date">Revenue Date:</label>
+                            <input type="date" class="form-control" id="revenue-date" placeholder="Enter revenue date">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-revenue-btn">Add Revenue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="add-bed-modal" tabindex="-1" role="dialog" aria-labelledby="add-bed-modal-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="add-bed-modal-label">Add Bed</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="bed-number">Bed Number:</label>
+                            <input type="number" class="form-control" id="bed-number" placeholder="Enter bed number">
+                        </div>
+                        <div class="form-group">
+                            <label for="bed-status">Bed Status:</label>
+                            <select class="form-control" id="bed-status">
+                                <option value="available">Available</option>
+                                <option value="occupied">Occupied</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-bed-btn">Add Bed</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>
+        let admissionsCount = 0;
+        let dischargesCount = 0;
+        let doctorsCount = 0;
+        let revenueCount = 0;
+        let bedsCount = 0;
+        let patients = [];
+        let doctors = [];
+        let admissions = [];
+        let discharges = [];
+        let beds = [];
+        let revenues = [];
+
+        $(document).ready(function() {
+            $('#login-btn').click(function() {
+                $('#login-page').hide();
+                $('#dashboard-page').show();
+            });
+
+            $('#add-admission-btn').click(function() {
+                let patientName = $('#admission-patient-name').val();
+                let admissionDate = $('#admission-date').val();
+                admissions.push({ patientName, admissionDate });
+                patients.push(patientName);
+                admissionsCount++;
+                $('#admissions-count').text(admissionsCount + ' patients admitted');
+                updateAdmissionTable();
+                $('#add-admission-modal').modal('hide');
+            });
+
+            $('#add-discharge-btn').click(function() {
+                let patientName = $('#discharge-patient-name').val();
+                let dischargeDate = $('#discharge-date').val();
+                discharges.push({ patientName, dischargeDate });
+                dischargesCount++;
+                $('#discharges-count').text(dischargesCount + ' patients discharged');
+                updateDischargeTable();
+                $('#add-discharge-modal').modal('hide');
+            });
+
+            $('#add-doctor-btn').click(function() {
+                let doctorName = $('#doctor-name').val();
+                let doctorSpecialty = $('#doctor-specialty').val();
+                doctors.push({ doctorName, doctorSpecialty });
+                doctorsCount++;
+                $('#doctors-count').text(doctorsCount + ' doctors available');
+                updateDoctorTable();
+                $('#add-doctor-modal').modal('hide');
+            });
+
+            $('#add-revenue-btn').click(function() {
+                let revenueAmount = parseInt($('#revenue-amount').val());
+                let revenueDate = $('#revenue-date').val();
+                revenues.push({ revenueAmount, revenueDate });
+                revenueCount += revenueAmount;
+                $('#revenue-count').text('$' + revenueCount + ' revenue');
+                updateRevenueTable();
+                $('#add-revenue-modal').modal('hide');
+            });
+
+            $('#add-bed-btn').click(function() {
+                let bedNumber = parseInt($('#bed-number').val());
+                let bedStatus = $('#bed-status').val();
+                beds.push({ bedNumber, bedStatus });
+                bedsCount++;
+                $('#beds-count').text(bedsCount + ' beds available');
+                updateBedTable();
+                $('#add-bed-modal').modal('hide');
+            });
+
+            $('#view-patients-btn').click(function() {
+                updatePatientTable();
+            });
+
+            $('#view-doctors-btn').click(function() {
+                updateDoctorTable();
+            });
+        });
+
+        function updatePatientTable() {
+            let patientTableBody = $('#patient-table-body');
+            patientTableBody.empty();
+            for (let patient of patients) {
+                let newRow = $('<tr>');
+                let patientNameCell = $('<td>').text(patient);
+                newRow.append(patientNameCell);
+                patientTableBody.append(newRow);
+            }
+        }
+
+        function updateDoctorTable() {
+            let doctorTableBody = $('#doctor-table-body');
+            doctorTableBody.empty();
+            for (let doctor of doctors) {
+                let newRow = $('<tr>');
+                let doctorNameCell = $('<td>').text(doctor.doctorName);
+                let doctorSpecialtyCell = $('<td>').text(doctor.doctorSpecialty);
+                newRow.append(doctorNameCell);
+                newRow.append(doctorSpecialtyCell);
+                doctorTableBody.append(newRow);
+            }
+        }
+
+        function updateAdmissionTable() {
+            let admissionTableBody = $('#admission-table-body');
+            admissionTableBody.empty();
+            for (let admission of admissions) {
+                let newRow = $('<tr>');
+                let patientNameCell = $('<td>').text(admission.patientName);
+                let admissionDateCell = $('<td>').text(admission.admissionDate);
+                newRow.append(patientNameCell);
+                newRow.append(admissionDateCell);
+                admissionTableBody.append(newRow);
+            }
+        }
+
+        function updateDischargeTable() {
+            let dischargeTableBody = $('#discharge-table-body');
+            dischargeTableBody.empty();
+            for (let discharge of discharges) {
+                let newRow = $('<tr>');
+                let patientNameCell = $('<td>').text(discharge.patientName);
+                let dischargeDateCell = $('<td>').text(discharge.dischargeDate);
+                newRow.append(patientNameCell);
+                newRow.append(dischargeDateCell);
+                dischargeTableBody.append(newRow);
+            }
+        }
+
+        function updateBedTable() {
+            let bedTableBody = $('#bed-table-body');
+            bedTableBody.empty();
+            for (let bed of beds) {
+                let newRow = $('<tr>');
+                let bedNumberCell = $('<td>').text(bed.bedNumber);
+                let bedStatusCell = $('<td>').text(bed.bedStatus);
+                newRow.append(bedNumberCell);
+                newRow.append(bedStatusCell);
+                bedTableBody.append(newRow);
+            }
+        }
+
+        function updateRevenueTable() {
+            let revenueTableBody = $('#revenue-table-body');
+            revenueTableBody.empty();
+            for (let revenue of revenues) {
+                let newRow = $('<tr>');
+                let revenueAmountCell = $('<td>').text(revenue.revenueAmount);
+                let revenueDateCell = $('<td>').text(revenue.revenueDate);
+                newRow.append(revenueAmountCell);
+                newRow.append(revenueDateCell);
+                revenueTableBody.append(newRow);
+            }
+        }
+    </script>
+</body>
+</html>
